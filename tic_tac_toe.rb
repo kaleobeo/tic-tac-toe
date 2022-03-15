@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-class GameBoard
 
+class GameBoard
   def initialize
     @board = {
       a: [' ', ' ', ' '],
@@ -8,14 +8,19 @@ class GameBoard
       c: [' ', ' ', ' ']
     }
   end
-  
+
   def to_s
-    @board.each_value { |row| puts "#{row[0]} | #{row[1]} | #{row[2]}" }
+    spacer = '-+-+-'
+    @board.each_pair do |row, values|
+      if row == :c
+        puts "#{values[0]}|#{values[1]}|#{values[2]}"
+      else
+        puts "#{values[0]}|#{values[1]}|#{values[2]}", spacer
+      end
+    end
   end
 
 end
 
 class Player
-
 end
-
