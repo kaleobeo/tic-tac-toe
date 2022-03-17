@@ -27,6 +27,29 @@ class GameBoard
     end
   end
 
+  def valid_space?(row, col)
+    @board[row.to_s][col - 1] == ' '
+  end
+
+  def place_symbol(symbol, row, num)
+    @board[row][num - 1] = symbol
+  end
+
+  def to_s
+    spacer = '  -+-+-'
+    @board.each_pair do |row, values|
+      print "#{row} "
+      if row == :c
+        puts "#{values[0]}|#{values[1]}|#{values[2]}"
+      else
+        puts "#{values[0]}|#{values[1]}|#{values[2]}", spacer
+      end
+    end
+    puts '  1 2 3'
+  end
+
+  private
+
   def one_turn(player)
     puts self
     player.make_move
@@ -34,7 +57,7 @@ class GameBoard
   end
 
   def check_for_wins(symbol)
-    [row_wins, column_wins].each do |type|
+    [row_wins, column_wins, diagonal_wins].each do |type|
       type.each do |condition|
         next unless condition.all? { |space| space == symbol }
 
@@ -57,24 +80,12 @@ class GameBoard
     [@board['a'], @board['b'], @board['c']].transpose
   end
 
-  def to_s
-    spacer = '  -+-+-'
-    @board.each_pair do |row, values|
-      print "#{row} "
-      if row == :c
-        puts "#{values[0]}|#{values[1]}|#{values[2]}"
-      else
-        puts "#{values[0]}|#{values[1]}|#{values[2]}", spacer
-      end
-    end
-    puts '  1 2 3'
+  def diagonal_wins
+    [
+      [@board['a'][0], @board['b'][1], @board['c'][2]],
+      [@board['a'][2], @board['b'][1], @board['c'][0]]
+    ]
   end
-
-  def place_symbol(symbol, row, num)
-    @board[row][num - 1] = symbol if @board[row][num - 1] == ' '
-  end
-
-  private
 
   def reset
     Player.reset
@@ -104,7 +115,7 @@ class Player
     puts "#{@symbol} player: Which column would you like to play in?"
     num = gets.chomp.to_i
 
-    if row.between?('a', 'c') && num.between?(1, 3)
+    if row.between?('a', 'c') && num.between?(1, 3) && parent_game.valid_space?(row, num)
       parent_game.place_symbol(symbol, row, num)
     else
       puts 'Looks like you inputted something wrong, try again.'
