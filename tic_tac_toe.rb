@@ -12,8 +12,51 @@ class GameBoard
 
   def initialize
     @board = DEFAULT_BOARD.dup
+    @game_over = false
     @first_player = Player.new(self)
     @second_player = Player.new(self)
+    play_game
+  end
+
+  def play_game
+    until @game_over
+      one_turn(@first_player)
+      if @game_over
+        break
+      end
+
+      one_turn(@second_player)
+    end
+  end
+
+  def one_turn(player)
+    puts self
+    player.make_move
+    check_for_wins(player.symbol)
+  end
+
+  def check_for_wins(symbol)
+    [row_wins, column_wins].each do |type|
+      type.each do |condition|
+        if condition.all? { |space| space == symbol }
+          puts self
+          puts "#{symbol} wins!"
+          @game_over = true
+        end
+      end
+    end
+  end
+
+  def row_wins
+    [
+      @board['a'],
+      @board['b'],
+      @board['c']
+    ]
+  end
+
+  def column_wins
+    [@board['a'], @board['b'], @board['c']].transpose
   end
 
   def to_s
@@ -41,6 +84,7 @@ class GameBoard
   end
 end
 
+# Define class Player that manages player moves and points
 class Player
   @@legal_symbols = %w[x o]
   attr_reader :symbol, :parent_game
@@ -57,9 +101,9 @@ class Player
   end
 
   def make_move
-    puts 'Which row would you like to play in?'
+    puts "#{@symbol} player: Which row would you like to play in?"
     row = gets.chomp
-    puts 'Which column would you like to play in?'
+    puts "#{@symbol} player: Which column would you like to play in?"
     num = gets.chomp.to_i
 
     if row.between?('a', 'c') && num.between?(1, 3)
@@ -74,3 +118,5 @@ class Player
     @@legal_symbols = %w[x o]
   end
 end
+
+game = GameBoard.new
