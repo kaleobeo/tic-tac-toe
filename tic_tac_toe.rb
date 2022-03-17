@@ -21,9 +21,7 @@ class GameBoard
   def play_game
     until @game_over
       one_turn(@first_player)
-      if @game_over
-        break
-      end
+      break if @game_over
 
       one_turn(@second_player)
     end
@@ -38,11 +36,11 @@ class GameBoard
   def check_for_wins(symbol)
     [row_wins, column_wins].each do |type|
       type.each do |condition|
-        if condition.all? { |space| space == symbol }
-          puts self
-          puts "#{symbol} wins!"
-          @game_over = true
-        end
+        next unless condition.all? { |space| space == symbol }
+
+        puts self
+        puts "#{symbol} wins!"
+        @game_over = true
       end
     end
   end
