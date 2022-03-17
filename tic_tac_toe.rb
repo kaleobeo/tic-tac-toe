@@ -22,6 +22,10 @@ class GameBoard
     until @game_over
       one_turn(@first_player)
       break if @game_over
+      if board_full?
+        puts 'Cat\'s game!'
+        break
+      end
 
       one_turn(@second_player)
     end
@@ -49,6 +53,12 @@ class GameBoard
   end
 
   private
+
+  def board_full?
+    [@board['a'], @board['b'], @board['c']].all? do |row|
+      row.none? { |space| space == ' ' }
+    end
+  end
 
   def one_turn(player)
     puts self
